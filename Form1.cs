@@ -23,37 +23,28 @@ namespace domain_setings_winforms
         bool domain_status;
         bool trust_domain_bool;
 
+        public string proxy = "192.168.100.1:3128";
+
         [DllImport("wininet.dll")]
         public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);
         public const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
         public const int INTERNET_OPTION_REFRESH = 37;
         bool settingsReturn, refreshReturn;
-
-        private const long SHCNE_ASSOCCHANGED = 0x8000000L;
-        private const uint SHCNF_IDLIST = 0x0U;
-
-        [DllImport("shell32.dll", SetLastError = true)]
-        private static extern void SHChangeNotify(long wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
-
-        [DllImport("user32.DLL")]
-        public static extern bool SendNotifyMessageA(IntPtr hWnd, uint Msg, int wParam, int lParam);
-
-        public static IntPtr HWND_BROADCAST = (IntPtr)0xffff;
-        public static uint WM_SETTINGCHANGE = 0x001A;
         
         public Form1()
         {
             InitializeComponent();
             domain_name();
             PartOfDomain();
-            set_proxy();
             this.Text = "Domain master " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             textBox1.Multiline = false;
-            if (Properties.Settings.Default.name != null && Properties.Settings.Default.name !="")
+            if (Properties.Settings.Default.name != null && Properties.Settings.Default.name != "")
             {
                 textBox1.Text = Properties.Settings.Default.name;
                 name_machine = Properties.Settings.Default.name;
             }
+            if (check_proxy(proxy))
+                button_proxy.Text = "Выключить прокси";
         }
 
         private void input_domain_Click(object sender, EventArgs e)
@@ -326,21 +317,43 @@ namespace domain_setings_winforms
             }
             PartOfDomain();
         }
-       private void set_proxy()
+
+        private void button_proxy_Click(object sender, EventArgs e)
+        {
+            if(button_proxy.Text== "Выключить прокси")
+            {
+                set_proxy(proxy, 0);
+                button_proxy.Text = "Включить прокси";
+            }
+            else
+            {
+                set_proxy(proxy, 1);
+                button_proxy.Text = "Выключить прокси";
+            }
+        }
+
+        private void set_proxy(string _proxy,int ProxyEnable)
         {
             RegistryKey proxy_machine = Registry.CurrentUser;
             RegistryKey proxy_server = proxy_machine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
-            proxy_server.SetValue("ProxyEnable", 0);
-            proxy_server.SetValue("ProxyServer", "192.168.100.1:3128");
+            proxy_server.SetValue("ProxyEnable", ProxyEnable);
+            if(ProxyEnable==1) 
+                proxy_server.SetValue("ProxyServer", _proxy);
             proxy_server.Close();
             proxy_machine.Close();
-            //MessageBox.Show(proxy_machine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings").GetValue("ProxyServer").ToString());
 
             settingsReturn = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SETTINGS_CHANGED, IntPtr.Zero, 0);
             refreshReturn = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_REFRESH, IntPtr.Zero, 0);
-
-            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
-            SendNotifyMessageA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, 0);
+        }
+        private bool check_proxy(string _proxy)
+        {
+            RegistryKey proxy_machine = Registry.CurrentUser;
+            RegistryKey proxy_server = proxy_machine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+            if (proxy_server.GetValue("ProxyServer").ToString()!=_proxy)
+                return false;
+            if(proxy_server.GetValue("ProxyEnable").ToString()=="0")
+                return false;
+            return true;
         }
     }
 }
