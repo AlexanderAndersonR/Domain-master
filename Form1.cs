@@ -11,20 +11,42 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace domain_setings_winforms
 {
+
     public partial class Form1 : Form
     {
         string name_machine_in_domain = "";
         string name_machine = "";
         bool domain_status;
         bool trust_domain_bool;
+
+        [DllImport("wininet.dll")]
+        public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);
+        public const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
+        public const int INTERNET_OPTION_REFRESH = 37;
+        bool settingsReturn, refreshReturn;
+
+        private const long SHCNE_ASSOCCHANGED = 0x8000000L;
+        private const uint SHCNF_IDLIST = 0x0U;
+
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern void SHChangeNotify(long wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+
+        [DllImport("user32.DLL")]
+        public static extern bool SendNotifyMessageA(IntPtr hWnd, uint Msg, int wParam, int lParam);
+
+        public static IntPtr HWND_BROADCAST = (IntPtr)0xffff;
+        public static uint WM_SETTINGCHANGE = 0x001A;
+        
         public Form1()
         {
             InitializeComponent();
             domain_name();
             PartOfDomain();
+            set_proxy();
             this.Text = "Domain master " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             textBox1.Multiline = false;
             if (Properties.Settings.Default.name != null && Properties.Settings.Default.name !="")
@@ -303,6 +325,22 @@ namespace domain_setings_winforms
                 MessageBox.Show(result_Error, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             PartOfDomain();
+        }
+       private void set_proxy()
+        {
+            RegistryKey proxy_machine = Registry.CurrentUser;
+            RegistryKey proxy_server = proxy_machine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+            proxy_server.SetValue("ProxyEnable", 0);
+            proxy_server.SetValue("ProxyServer", "192.168.100.1:3128");
+            proxy_server.Close();
+            proxy_machine.Close();
+            //MessageBox.Show(proxy_machine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings").GetValue("ProxyServer").ToString());
+
+            settingsReturn = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SETTINGS_CHANGED, IntPtr.Zero, 0);
+            refreshReturn = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_REFRESH, IntPtr.Zero, 0);
+
+            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+            SendNotifyMessageA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, 0);
         }
     }
 }
