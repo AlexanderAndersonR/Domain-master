@@ -16,7 +16,7 @@ using System.Security.Principal;
 
 namespace domain_setings_winforms
 {
-    
+
     public partial class Form1 : Form
     {
         string name_machine_in_domain = "";
@@ -31,11 +31,14 @@ namespace domain_setings_winforms
         public const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
         public const int INTERNET_OPTION_REFRESH = 37;
         bool settingsReturn, refreshReturn;
-        
+        public ToolStripMenuItem MenuItem_notifyIcon_menu = new ToolStripMenuItem ();
+
         public Form1()
         {
             InitializeComponent();
+            MenuItem_notifyIcon_menu.Click += Menu_Click;
             isAdmin();
+            notifyIcon_menu();
             if (!isAdministrator)
             {
                 input_domain.Enabled = false;
@@ -52,6 +55,27 @@ namespace domain_setings_winforms
             }
             if (check_proxy(proxy))
                 button_proxy.Text = "Выключить прокси";
+            MenuItem_notifyIcon_menu.Text = button_proxy.Text;
+        }
+        private void notifyIcon_menu()
+        {
+            notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+            notifyIcon.ContextMenuStrip.Items.Add(MenuItem_notifyIcon_menu);
+        }
+        private void Menu_Click(object sender, EventArgs e)
+        {
+            if (MenuItem_notifyIcon_menu.Text == "Выключить прокси")
+            {
+                set_proxy(proxy, 0);
+                MenuItem_notifyIcon_menu.Text = "Включить прокси";
+                button_proxy.Text = "Включить прокси";
+            }
+            else
+            {
+                set_proxy(proxy, 1);
+                MenuItem_notifyIcon_menu.Text = "Выключить прокси";
+                button_proxy.Text = "Выключить прокси";
+            }
         }
         private void isAdmin()
         {
@@ -262,6 +286,7 @@ namespace domain_setings_winforms
             {
                 name_machine_in_domain=result_Output;
                 label1.Text = "Имя компьютера: " + result_Output;
+                textBox1.Text = result_Output;
             }
             if (!String.IsNullOrWhiteSpace(result_Error) && !String.IsNullOrEmpty(result_Error))
             {
@@ -340,11 +365,13 @@ namespace domain_setings_winforms
             {
                 set_proxy(proxy, 0);
                 button_proxy.Text = "Включить прокси";
+                MenuItem_notifyIcon_menu.Text = "Включить прокси";
             }
             else
             {
                 set_proxy(proxy, 1);
                 button_proxy.Text = "Выключить прокси";
+                MenuItem_notifyIcon_menu.Text = "Выключить прокси";
             }
         }
 
@@ -361,6 +388,35 @@ namespace domain_setings_winforms
             settingsReturn = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SETTINGS_CHANGED, IntPtr.Zero, 0);
             refreshReturn = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_REFRESH, IntPtr.Zero, 0);
         }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            notifyIcon.Visible = false;
+            this.ShowInTaskbar = true;
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+                notifyIcon.Visible = true;
+            }
+        }
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                //обрабатываем щелчок левой
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                //обрабатываем щелчок правой
+            }
+        }
+
         private bool check_proxy(string _proxy)
         {
             RegistryKey proxy_machine = Registry.CurrentUser;
