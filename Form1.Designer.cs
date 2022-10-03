@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.input_domain = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -40,9 +41,16 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.button_exit_domain = new System.Windows.Forms.Button();
             this.button_proxy = new System.Windows.Forms.Button();
-            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.checkBox_auto_run = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
+            // 
+            // notifyIcon
+            // 
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "notifyIcon1";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
             // textBox1
             // 
@@ -144,13 +152,6 @@
             this.button_proxy.UseVisualStyleBackColor = true;
             this.button_proxy.Click += new System.EventHandler(this.button_proxy_Click);
             // 
-            // notifyIcon
-            // 
-            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
-            this.notifyIcon.Text = "notifyIcon1";
-            this.notifyIcon.Visible = true;
-            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
-            // 
             // checkBox_auto_run
             // 
             this.checkBox_auto_run.AutoSize = true;
@@ -162,11 +163,23 @@
             this.checkBox_auto_run.UseVisualStyleBackColor = true;
             this.checkBox_auto_run.CheckedChanged += new System.EventHandler(this.checkBox_auto_run_CheckedChanged);
             // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(16, 130);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(141, 17);
+            this.checkBox3.TabIndex = 12;
+            this.checkBox3.Text = "Скрывать при запуске";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(532, 201);
+            this.ClientSize = new System.Drawing.Size(532, 206);
+            this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.checkBox_auto_run);
             this.Controls.Add(this.button_proxy);
             this.Controls.Add(this.button_exit_domain);
@@ -179,7 +192,9 @@
             this.Controls.Add(this.input_domain);
             this.Controls.Add(this.textBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(548, 214);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(548, 245);
+            this.MinimumSize = new System.Drawing.Size(548, 245);
             this.Name = "Form1";
             this.Text = "Domain master ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -201,8 +216,9 @@
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Button button_exit_domain;
         private System.Windows.Forms.Button button_proxy;
-        private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.CheckBox checkBox_auto_run;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

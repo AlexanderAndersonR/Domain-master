@@ -37,9 +37,10 @@ namespace domain_setings_winforms
         {
             InitializeComponent();
             MenuItem_notifyIcon_menu.Click += Menu_Click;
-            isAdmin();
             notifyIcon_menu();
             checkBox_auto_run.Checked = check_auto_run();
+            isAdmin();
+            checkBox3.Checked = Properties.Settings.Default.hide;
             if (!isAdministrator)
             {
                 input_domain.Enabled = false;
@@ -57,6 +58,12 @@ namespace domain_setings_winforms
             if (check_proxy(proxy))
                 button_proxy.Text = "Выключить прокси";
             MenuItem_notifyIcon_menu.Text = button_proxy.Text;
+            if (Properties.Settings.Default.hide)
+            {
+                this.WindowState = FormWindowState.Minimized;
+                this.ShowInTaskbar = false;
+            }
+
         }
         private void notifyIcon_menu()
         {
@@ -83,7 +90,7 @@ namespace domain_setings_winforms
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             isAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
-            if (!isAdministrator)
+            if (!isAdministrator && !checkBox_auto_run.Checked)
                 MessageBox.Show("Приложение запущенно без прав администратора, ограничены действия с доменом", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
@@ -392,17 +399,17 @@ namespace domain_setings_winforms
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            notifyIcon.Visible = false;
-            this.ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
+            notifyIcon.Visible = false;
         }
 
         private void Form1_Resize(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Minimized)
             {
-                this.ShowInTaskbar = false;
                 notifyIcon.Visible = true;
+                this.ShowInTaskbar = false;
             }
         }
 
@@ -428,6 +435,13 @@ namespace domain_setings_winforms
             else
                 return true;
         }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.hide = checkBox3.Checked;
+            Properties.Settings.Default.Save();
+        }
+
         private bool check_proxy(string _proxy)
         {
             RegistryKey proxy_machine = Registry.CurrentUser;
