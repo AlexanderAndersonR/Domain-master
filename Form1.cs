@@ -12,17 +12,18 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace domain_setings_winforms
 {
-
+    
     public partial class Form1 : Form
     {
         string name_machine_in_domain = "";
         string name_machine = "";
         bool domain_status;
         bool trust_domain_bool;
-
+        bool isAdministrator;
         public string proxy = "192.168.100.1:3128";
 
         [DllImport("wininet.dll")]
@@ -34,6 +35,12 @@ namespace domain_setings_winforms
         public Form1()
         {
             InitializeComponent();
+            isAdmin();
+            if (!isAdministrator)
+            {
+                input_domain.Enabled = false;
+                button_exit_domain.Enabled = false;
+            }
             domain_name();
             PartOfDomain();
             this.Text = "Domain master " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -45,6 +52,14 @@ namespace domain_setings_winforms
             }
             if (check_proxy(proxy))
                 button_proxy.Text = "Выключить прокси";
+        }
+        private void isAdmin()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            isAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            if (!isAdministrator)
+                MessageBox.Show("Приложение запущенно без прав администратора, ограничены действия с доменом", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void input_domain_Click(object sender, EventArgs e)
@@ -296,6 +311,7 @@ namespace domain_setings_winforms
             domain_name();
             Process process = Process.Start(new ProcessStartInfo
             {
+                Verb = "runas",
                 FileName = "cmd",
                 StandardErrorEncoding = Encoding.GetEncoding(866),
                 StandardOutputEncoding = Encoding.GetEncoding(866),
@@ -304,7 +320,7 @@ namespace domain_setings_winforms
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-            }); ;
+            });
             string result_Output = process.StandardOutput.ReadToEnd().Replace("Active code page: 65001", "");
             string result_Error = process.StandardError.ReadToEnd();
             if (!String.IsNullOrWhiteSpace(result_Output) && !String.IsNullOrEmpty(result_Output))
