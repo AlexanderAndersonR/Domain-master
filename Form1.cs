@@ -39,6 +39,7 @@ namespace domain_setings_winforms
             MenuItem_notifyIcon_menu.Click += Menu_Click;
             isAdmin();
             notifyIcon_menu();
+            checkBox_auto_run.Checked = check_auto_run();
             if (!isAdministrator)
             {
                 input_domain.Enabled = false;
@@ -405,18 +406,28 @@ namespace domain_setings_winforms
             }
         }
 
-        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        private void checkBox_auto_run_CheckedChanged(object sender, EventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (checkBox_auto_run.Checked)
             {
-                //обрабатываем щелчок левой
+                RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                rkApp.SetValue("domain_setings_winforms", Application.ExecutablePath.ToString());
             }
-            else if (e.Button == MouseButtons.Right)
+            else
             {
-                //обрабатываем щелчок правой
+                RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                rkApp.DeleteValue("domain_setings_winforms", false);
             }
         }
+        private bool check_auto_run()
+        {
+            RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
+            if (rkApp.GetValue("domain_setings_winforms") == null)
+                return false;
+            else
+                return true;
+        }
         private bool check_proxy(string _proxy)
         {
             RegistryKey proxy_machine = Registry.CurrentUser;
