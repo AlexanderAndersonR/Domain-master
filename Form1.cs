@@ -444,13 +444,21 @@ namespace domain_setings_winforms
 
         private bool check_proxy(string _proxy)
         {
-            RegistryKey proxy_machine = Registry.CurrentUser;
-            RegistryKey proxy_server = proxy_machine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
-            if (proxy_server.GetValue("ProxyServer").ToString()!=_proxy)
+            try
+            {
+                RegistryKey proxy_machine = Registry.CurrentUser;
+                RegistryKey proxy_server = proxy_machine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+                if (proxy_server.GetValue("ProxyServer").ToString() != _proxy)
+                    return false;
+                if (proxy_server.GetValue("ProxyEnable").ToString() == "0")
+                    return false;
+                return true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
                 return false;
-            if(proxy_server.GetValue("ProxyEnable").ToString()=="0")
-                return false;
-            return true;
+            }
         }
     }
 }
