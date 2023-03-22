@@ -131,7 +131,7 @@ namespace domain_setings_winforms
                 FileName = "cmd",
                 StandardErrorEncoding = Encoding.GetEncoding(866),
                 StandardOutputEncoding = Encoding.GetEncoding(866),
-                Arguments = "/c netdom join " + newName + " /domain:radio1.aqua.sci-nnov.ru /userd:1 /passwordd:362",
+                Arguments = "/c netdom join " + newName + " /domain:radio1.aqua.sci-nnov.ru /userd:1 /passwordd:djnnfrjq",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
