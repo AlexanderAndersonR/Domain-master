@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.IO;
 
 namespace domain_setings_winforms
 {
@@ -63,7 +64,7 @@ namespace domain_setings_winforms
                 this.WindowState = FormWindowState.Minimized;
                 this.ShowInTaskbar = false;
             }
-
+            checkUpdates();
         }
         private void notifyIcon_menu()
         {
@@ -149,7 +150,6 @@ namespace domain_setings_winforms
             }
             PartOfDomain();
         }
-
         private void reset_Click(object sender, EventArgs e)
         {
             Process process = Process.Start(new ProcessStartInfo
@@ -459,6 +459,11 @@ namespace domain_setings_winforms
                 MessageBox.Show(e.ToString());
                 return false;
             }
+        }
+        private void checkUpdates()
+        {
+            FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(@"C:\Users\Kaf\Desktop\domain_setings_winforms.exe");
+            MessageBox.Show(myFileVersionInfo.ToString());
         }
     }
 }
