@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.IO;
+using System.Threading;
 
 namespace domain_setings_winforms
 {
@@ -26,7 +27,8 @@ namespace domain_setings_winforms
         bool trust_domain_bool;
         bool isAdministrator;
         public string proxy = "192.168.100.1:3128";
-
+        double thisVersion;
+        double newVersion;
         [DllImport("wininet.dll")]
         public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);
         public const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
@@ -49,7 +51,8 @@ namespace domain_setings_winforms
             }
             domain_name();
             PartOfDomain();
-            this.Text = "Domain master " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.Text = "Domain master " + Application.ProductVersion.ToString();
+            thisVersion = Convert.ToDouble(ProductVersion.ToString().Replace(".",""));
             textBox1.Multiline = false;
             if (Properties.Settings.Default.name != null && Properties.Settings.Default.name != "")
             {
@@ -460,10 +463,25 @@ namespace domain_setings_winforms
                 return false;
             }
         }
-        private void checkUpdates()
+        private async void checkUpdates()
         {
-            FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(@"C:\Users\Kaf\Desktop\domain_setings_winforms.exe");
-            MessageBox.Show(myFileVersionInfo.ToString());
+            await Task.Run(() =>
+            {
+                while (true)
+                {
+                    //незабыть в трай обернуть
+                    FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(@"C:\Users\Kaf\Desktop\domain_setings_winforms.exe");
+                    newVersion = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
+                    //MessageBox.Show(thisVersion.ToString() + " " + newVersion.ToString());
+                    //if (thisVersion < newVersion)
+                    //{
+                        MessageBox.Show("new");
+                        Process.Start(@"C:\Users\Kaf\source\repos\Update\bin\Debug\Update.exe");
+                    //}
+                    Thread.Sleep(30000);
+                }
+            });
+            
         }
     }
 }
