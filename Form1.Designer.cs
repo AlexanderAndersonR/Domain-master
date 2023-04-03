@@ -43,6 +43,8 @@
             this.button_proxy = new System.Windows.Forms.Button();
             this.checkBox_auto_run = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.button_test = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // notifyIcon
@@ -174,11 +176,30 @@
             this.checkBox3.UseVisualStyleBackColor = true;
             this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(28, 171);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(260, 23);
+            this.progressBar1.TabIndex = 13;
+            // 
+            // button_test
+            // 
+            this.button_test.Location = new System.Drawing.Point(243, 130);
+            this.button_test.Name = "button_test";
+            this.button_test.Size = new System.Drawing.Size(75, 23);
+            this.button_test.TabIndex = 14;
+            this.button_test.Text = "button1";
+            this.button_test.UseVisualStyleBackColor = true;
+            this.button_test.Click += new System.EventHandler(this.button_test_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(532, 206);
+            this.Controls.Add(this.button_test);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.checkBox_auto_run);
             this.Controls.Add(this.button_proxy);
@@ -196,6 +217,7 @@
             this.MaximumSize = new System.Drawing.Size(548, 245);
             this.MinimumSize = new System.Drawing.Size(548, 245);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Domain master ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Resize += new System.EventHandler(this.Form1_Resize);
@@ -219,6 +241,8 @@
         private System.Windows.Forms.CheckBox checkBox_auto_run;
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button button_test;
     }
 }
 

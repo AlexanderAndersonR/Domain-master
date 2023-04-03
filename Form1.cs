@@ -35,7 +35,8 @@ namespace domain_setings_winforms
         public const int INTERNET_OPTION_REFRESH = 37;
         bool settingsReturn, refreshReturn;
         public ToolStripMenuItem MenuItem_notifyIcon_menu = new ToolStripMenuItem ();
-
+        String way_update_program = @"C:\Users\Kaf\Desktop\";
+        BackgroundWorker worker = new BackgroundWorker();
         public Form1()
         {
             InitializeComponent();
@@ -67,8 +68,23 @@ namespace domain_setings_winforms
                 this.WindowState = FormWindowState.Minimized;
                 this.ShowInTaskbar = false;
             }
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.DoWork += Worker_DoWork;
             checkUpdates();
         }
+
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            CopyFile(@"C:\Users\Kaf\Desktop\состав оборудования.pptx" , "C:\\Users\\Kaf\\Desktop\\Новая папка");
+        }
+
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar1.Value = e.ProgressPercentage;
+        }
+
         private void notifyIcon_menu()
         {
             notifyIcon.ContextMenuStrip = new ContextMenuStrip();
@@ -470,18 +486,57 @@ namespace domain_setings_winforms
                 while (true)
                 {
                     //незабыть в трай обернуть
-                    FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(@"C:\Users\Kaf\Desktop\domain_setings_winforms.exe");
+                    FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(way_update_program + Application.ProductName + ".exe");
                     newVersion = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
                     //MessageBox.Show(thisVersion.ToString() + " " + newVersion.ToString());
                     //if (thisVersion < newVersion)
                     //{
-                        MessageBox.Show("new");
-                        Process.Start(@"C:\Users\Kaf\source\repos\Update\bin\Debug\Update.exe");
-                    //}
+                    DialogResult result = MessageBox.Show("Обнаружена новая версия программы " + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
+                    "Внимание!",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.ServiceNotification);
+                    if (result == DialogResult.Yes)
+                    {
+                        //Directory.GetCurrentDirectory("Update.exe");
+                        //Process.Start(@"C:\Users\Kaf\source\repos\Update\bin\Debug\Update.exe");
+                        //AppDomain.CurrentDomain.BaseDirectory;
+                        string path = AppDomain.CurrentDomain.BaseDirectory + @"\update";
+                        DirectoryInfo dirInfo = new DirectoryInfo(path);
+                        if (!dirInfo.Exists)
+                            dirInfo.Create();
+                        //Process.Start(AppDomain.CurrentDomain.BaseDirectory + "Update.exe");
+
+                       
+                    }
+                    //this.Activate();
                     Thread.Sleep(30000);
                 }
             });
             
+        }
+
+        private void button_test_Click(object sender, EventArgs e)
+        {
+            worker.RunWorkerAsync();
+        }
+
+        private void CopyFile(string soure, string des)
+        {
+
+            //https://www.youtube.com/watch?v=c1f3KOpXgjQ
+            FileStream fsOut = new FileStream(des, FileMode.Create);
+            FileStream fsIn = new FileStream(soure, FileMode.Open);
+            byte[] bt = new byte[1048756];
+            int readByte;
+            while((readByte = fsIn.Read(bt, 0, bt.Length)) > 0)
+            {
+                fsOut.Write(bt,0, readByte);
+                worker.ReportProgress((int)(fsIn.Position * 100 / fsIn.Length));
+            }
+            fsIn.Close();
+            fsOut.Close();
         }
     }
 }
