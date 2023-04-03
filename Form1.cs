@@ -77,7 +77,7 @@ namespace domain_setings_winforms
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            CopyFile(@"C:\Users\Kaf\Desktop\состав оборудования.pptx" , "C:\\Users\\Kaf\\Desktop\\Новая папка");
+            CopyFile(@"C:\Users\Kaf\Desktop\состав оборудования.pptx" , @"C:\Users\Kafre-notebook-970\Desktop\Новая папка");
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -486,32 +486,32 @@ namespace domain_setings_winforms
                 while (true)
                 {
                     //незабыть в трай обернуть
-                    FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(way_update_program + Application.ProductName + ".exe");
-                    newVersion = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
-                    //MessageBox.Show(thisVersion.ToString() + " " + newVersion.ToString());
-                    //if (thisVersion < newVersion)
+                    //FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(way_update_program + Application.ProductName + ".exe");
+                    //newVersion = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
+                    ////MessageBox.Show(thisVersion.ToString() + " " + newVersion.ToString());
+                    ////if (thisVersion < newVersion)
+                    ////{
+                    //DialogResult result = MessageBox.Show("Обнаружена новая версия программы " + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
+                    //"Внимание!",
+                    //MessageBoxButtons.YesNo,
+                    //MessageBoxIcon.Question,
+                    //MessageBoxDefaultButton.Button1,
+                    //MessageBoxOptions.ServiceNotification);
+                    //if (result == DialogResult.Yes)
                     //{
-                    DialogResult result = MessageBox.Show("Обнаружена новая версия программы " + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
-                    "Внимание!",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button1,
-                    MessageBoxOptions.ServiceNotification);
-                    if (result == DialogResult.Yes)
-                    {
-                        //Directory.GetCurrentDirectory("Update.exe");
-                        //Process.Start(@"C:\Users\Kaf\source\repos\Update\bin\Debug\Update.exe");
-                        //AppDomain.CurrentDomain.BaseDirectory;
-                        string path = AppDomain.CurrentDomain.BaseDirectory + @"\update";
-                        DirectoryInfo dirInfo = new DirectoryInfo(path);
-                        if (!dirInfo.Exists)
-                            dirInfo.Create();
-                        //Process.Start(AppDomain.CurrentDomain.BaseDirectory + "Update.exe");
+                    //    //Directory.GetCurrentDirectory("Update.exe");
+                    //    //Process.Start(@"C:\Users\Kaf\source\repos\Update\bin\Debug\Update.exe");
+                    //    //AppDomain.CurrentDomain.BaseDirectory;
+                    //    string path = AppDomain.CurrentDomain.BaseDirectory + @"\update";
+                    //    DirectoryInfo dirInfo = new DirectoryInfo(path);
+                    //    if (!dirInfo.Exists)
+                    //        dirInfo.Create();
+                    //    //Process.Start(AppDomain.CurrentDomain.BaseDirectory + "Update.exe");
 
                        
-                    }
-                    //this.Activate();
-                    Thread.Sleep(30000);
+                    //}
+                    ////this.Activate();
+                    //Thread.Sleep(30000);
                 }
             });
             
@@ -526,6 +526,7 @@ namespace domain_setings_winforms
         {
 
             //https://www.youtube.com/watch?v=c1f3KOpXgjQ
+            //File.SetAttributes(file, FileAttributes.Normal);
             FileStream fsOut = new FileStream(des, FileMode.Create);
             FileStream fsIn = new FileStream(soure, FileMode.Open);
             byte[] bt = new byte[1048756];
