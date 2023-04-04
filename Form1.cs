@@ -28,14 +28,16 @@ namespace domain_setings_winforms
         bool isAdministrator;
         public string proxy = "192.168.100.1:3128";
         double thisVersion;
+        double thisVersion_Update;
         double newVersion;
+        double newVersion_Update;
         [DllImport("wininet.dll")]
         public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);
         public const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
         public const int INTERNET_OPTION_REFRESH = 37;
         bool settingsReturn, refreshReturn;
         public ToolStripMenuItem MenuItem_notifyIcon_menu = new ToolStripMenuItem ();
-        String way_update_program = @"C:\Users\Kaf\Desktop\";
+        String way_update_program = @"\\RADIO864-2-N\Work\Базылев\Domain master";
         BackgroundWorker worker = new BackgroundWorker();
         public Form1()
         {
@@ -54,6 +56,20 @@ namespace domain_setings_winforms
             PartOfDomain();
             this.Text = "Domain master " + Application.ProductVersion.ToString();
             thisVersion = Convert.ToDouble(ProductVersion.ToString().Replace(".",""));
+            try
+            {
+                FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "\\Update.exe");
+                thisVersion_Update = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Отсутствует файл обновления!",
+                "Ошибка!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                MessageBoxDefaultButton.Button1,
+                MessageBoxOptions.ServiceNotification);
+            }
             textBox1.Multiline = false;
             if (Properties.Settings.Default.name != null && Properties.Settings.Default.name != "")
             {
@@ -68,21 +84,7 @@ namespace domain_setings_winforms
                 this.WindowState = FormWindowState.Minimized;
                 this.ShowInTaskbar = false;
             }
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
-            worker.ProgressChanged += Worker_ProgressChanged;
-            worker.DoWork += Worker_DoWork;
             checkUpdates();
-        }
-
-        private void Worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            CopyFile(@"C:\Users\Kaf\Desktop\состав оборудования.pptx" , @"C:\Users\Kafre-notebook-970\Desktop\Новая папка");
-        }
-
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            progressBar1.Value = e.ProgressPercentage;
         }
 
         private void notifyIcon_menu()
@@ -486,58 +488,68 @@ namespace domain_setings_winforms
                 while (true)
                 {
                     //незабыть в трай обернуть
-                    //FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(way_update_program + Application.ProductName + ".exe");
-                    //newVersion = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
-                    ////MessageBox.Show(thisVersion.ToString() + " " + newVersion.ToString());
-                    ////if (thisVersion < newVersion)
-                    ////{
-                    //DialogResult result = MessageBox.Show("Обнаружена новая версия программы " + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
-                    //"Внимание!",
-                    //MessageBoxButtons.YesNo,
-                    //MessageBoxIcon.Question,
-                    //MessageBoxDefaultButton.Button1,
-                    //MessageBoxOptions.ServiceNotification);
-                    //if (result == DialogResult.Yes)
-                    //{
-                    //    //Directory.GetCurrentDirectory("Update.exe");
-                    //    //Process.Start(@"C:\Users\Kaf\source\repos\Update\bin\Debug\Update.exe");
-                    //    //AppDomain.CurrentDomain.BaseDirectory;
-                    //    string path = AppDomain.CurrentDomain.BaseDirectory + @"\update";
-                    //    DirectoryInfo dirInfo = new DirectoryInfo(path);
-                    //    if (!dirInfo.Exists)
-                    //        dirInfo.Create();
-                    //    //Process.Start(AppDomain.CurrentDomain.BaseDirectory + "Update.exe");
+                    try
+                    {
+                        FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(way_update_program +"\\"+ Application.ProductName + ".exe");
+                        newVersion = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
+                        if (thisVersion < newVersion)
+                        {
+                            DialogResult result = MessageBox.Show("Обнаружена новая версия программы " + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
+                            "Внимание!",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button1,
+                            MessageBoxOptions.ServiceNotification);
+                            if (result == DialogResult.Yes)
+                            {
+                                Form_download form_Download = new Form_download(Application.ProductName);
+                                form_Download.ShowDialog();
 
-                       
-                    //}
-                    ////this.Activate();
-                    //Thread.Sleep(30000);
+                            }
+                            else if (result == DialogResult.No)
+                            {
+                                break;
+                            }
+                            this.Activate();
+                        }
+                        FileVersionInfo myFileVersionInfo_update = FileVersionInfo.GetVersionInfo(way_update_program + "\\Update.exe");
+                        newVersion_Update = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
+                        if (thisVersion_Update < newVersion_Update)
+                        {
+                            DialogResult result = MessageBox.Show("Обнаружена новая версия программы обновления" + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
+                            "Внимание!",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button1,
+                            MessageBoxOptions.ServiceNotification);
+                            if (result == DialogResult.Yes)
+                            {
+                                Form_download form_Download = new Form_download("Update");
+                                form_Download.ShowDialog();
+
+                            }
+                            else if (result == DialogResult.No)
+                            {
+                                break;
+                            }
+                            this.Activate();
+                        }
+                        Thread.Sleep(30000);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Нет доступа к серверу обновления",
+                        "Ошибка!",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1,
+                        MessageBoxOptions.ServiceNotification);
+                        break;
+                    }
                 }
             });
             
         }
 
-        private void button_test_Click(object sender, EventArgs e)
-        {
-            worker.RunWorkerAsync();
-        }
-
-        private void CopyFile(string soure, string des)
-        {
-
-            //https://www.youtube.com/watch?v=c1f3KOpXgjQ
-            //File.SetAttributes(file, FileAttributes.Normal);
-            FileStream fsOut = new FileStream(des, FileMode.Create);
-            FileStream fsIn = new FileStream(soure, FileMode.Open);
-            byte[] bt = new byte[1048756];
-            int readByte;
-            while((readByte = fsIn.Read(bt, 0, bt.Length)) > 0)
-            {
-                fsOut.Write(bt,0, readByte);
-                worker.ReportProgress((int)(fsIn.Position * 100 / fsIn.Length));
-            }
-            fsIn.Close();
-            fsOut.Close();
-        }
     }
 }
