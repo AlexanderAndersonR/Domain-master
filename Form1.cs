@@ -15,6 +15,8 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.IO;
 using System.Threading;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace domain_setings_winforms
 {
@@ -37,7 +39,7 @@ namespace domain_setings_winforms
         public const int INTERNET_OPTION_REFRESH = 37;
         bool settingsReturn, refreshReturn;
         public ToolStripMenuItem MenuItem_notifyIcon_menu = new ToolStripMenuItem ();
-        String way_update_program = @"\\RADIO864-2-N\Work\Базылев\Domain master";
+        String way_update_program = @"\\Electronic\1\Domain master";
         BackgroundWorker worker = new BackgroundWorker();
         public Form1()
         {
@@ -487,7 +489,6 @@ namespace domain_setings_winforms
             {
                 while (true)
                 {
-                    //незабыть в трай обернуть
                     try
                     {
                         FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(way_update_program +"\\"+ Application.ProductName + ".exe");
@@ -502,21 +503,28 @@ namespace domain_setings_winforms
                             MessageBoxOptions.ServiceNotification);
                             if (result == DialogResult.Yes)
                             {
-                                Form_download form_Download = new Form_download(Application.ProductName);
-                                form_Download.ShowDialog();
-
+                                if (isAdministrator)
+                                {
+                                    Form_download form_Download = new Form_download(Application.ProductName);
+                                    form_Download.ShowDialog();
+                                }
+                                else
+                                {
+                                    restart();
+                                }
                             }
                             else if (result == DialogResult.No)
                             {
+                                Name += " доступно обновление до версии " + myFileVersionInfo.ProductVersion.ToString();
                                 break;
                             }
                             this.Activate();
                         }
                         FileVersionInfo myFileVersionInfo_update = FileVersionInfo.GetVersionInfo(way_update_program + "\\Update.exe");
-                        newVersion_Update = Convert.ToDouble(myFileVersionInfo.ProductVersion.ToString().Replace(".", ""));
+                        newVersion_Update = Convert.ToDouble(myFileVersionInfo_update.ProductVersion.ToString().Replace(".", ""));
                         if (thisVersion_Update < newVersion_Update)
                         {
-                            DialogResult result = MessageBox.Show("Обнаружена новая версия программы обновления" + myFileVersionInfo.ProductVersion.ToString() + "\r\nУстановить сейчас?",
+                            DialogResult result = MessageBox.Show("Обнаружена новая версия программы обновления " + myFileVersionInfo_update.ProductVersion.ToString() + "\r\nУстановить сейчас?",
                             "Внимание!",
                             MessageBoxButtons.YesNo,
                             MessageBoxIcon.Question,
@@ -524,21 +532,28 @@ namespace domain_setings_winforms
                             MessageBoxOptions.ServiceNotification);
                             if (result == DialogResult.Yes)
                             {
-                                Form_download form_Download = new Form_download("Update");
-                                form_Download.ShowDialog();
-
+                                if (isAdministrator)
+                                {
+                                    Form_download form_Download = new Form_download("Update");
+                                    form_Download.ShowDialog();
+                                }
+                                else
+                                {
+                                    restart();
+                                }
                             }
                             else if (result == DialogResult.No)
                             {
+                                Name += " доступна новая версия программы обновления";
                                 break;
                             }
-                            this.Activate();
+                            //this.Activate();
                         }
                         Thread.Sleep(30000);
                     }
-                    catch (Exception)
+                    catch (Exception e )
                     {
-                        MessageBox.Show("Нет доступа к серверу обновления",
+                        MessageBox.Show("Нет доступа к серверу обновления \r\n"+e,
                         "Ошибка!",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error,
@@ -550,6 +565,20 @@ namespace domain_setings_winforms
             });
             
         }
-
+        private void restart()
+        {
+            MessageBox.Show("Программа запущена не от имени администратора, сейчас она будет перезагружена",
+            "Внимание!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information,
+            MessageBoxDefaultButton.Button1,
+            MessageBoxOptions.ServiceNotification);
+            Process proc = new Process();
+            proc.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + Application.ProductName + ".exe";
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Verb = "runas";
+            proc.Start();
+            Application.Exit();
+        }
     }
 }

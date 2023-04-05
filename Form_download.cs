@@ -15,7 +15,7 @@ namespace domain_setings_winforms
     public partial class Form_download : Form
     {
         BackgroundWorker worker = new BackgroundWorker();
-        String path = "\\\\RADIO864-2-N\\Work\\Базылев\\Domain master";
+        String path = @"\\Electronic\1\Domain master";
         List<string> filesDir1 = new List<string>();
         int count = 0;
         String exe { get; set; }
@@ -55,8 +55,27 @@ namespace domain_setings_winforms
             {
                 if(exe == "Update")
                 {
-
-                }else 
+                    filesDir1.Clear();
+                    filesDir1 = (from a in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\update file") select Path.GetFileName(a)).ToList();
+                    count = 0;
+                    foreach (var item in filesDir1)
+                    {
+                        if(item.Contains("Update"))
+                            CopyFile(AppDomain.CurrentDomain.BaseDirectory + "\\update file\\" + item, AppDomain.CurrentDomain.BaseDirectory + "\\" + item);
+                        count++;
+                        //label1.Text = "Файл " + count.ToString() + " из " + filesDir1.Count.ToString();
+                        //progressBar1.Value = (count * 100) / filesDir1.Count;
+                    }
+                    MessageBox.Show("Установка новой версии программы обновления завершина",
+                    "Внимание",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.ServiceNotification);
+                    dirInfo.Delete(true);
+                    BeginInvoke(new Deleg(Close));
+                }
+                else 
                 {
                     Process.Start(AppDomain.CurrentDomain.BaseDirectory + "Update.exe");
                     Application.Exit();
