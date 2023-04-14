@@ -17,12 +17,15 @@ using System.IO;
 using System.Threading;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices.ComTypes;
+using System.Management;
 
 namespace domain_setings_winforms
 {
 
     public partial class Form1 : Form
     {
+        string admin_name = "1";
+        string admin_password = "362";
         string name_machine_in_domain = "";
         string name_machine = "";
         bool domain_status;
@@ -155,7 +158,7 @@ namespace domain_setings_winforms
                 FileName = "cmd",
                 StandardErrorEncoding = Encoding.GetEncoding(866),
                 StandardOutputEncoding = Encoding.GetEncoding(866),
-                Arguments = "/c netdom join " + newName + " /domain:radio1.aqua.sci-nnov.ru /userd:1 /passwordd:djnnfrjq",
+                Arguments = "/c netdom join " + newName + " /domain:radio1.aqua.sci-nnov.ru /userd:"+ admin_name + " / passwordd:"+ admin_password,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
@@ -371,7 +374,7 @@ namespace domain_setings_winforms
                 FileName = "cmd",
                 StandardErrorEncoding = Encoding.GetEncoding(866),
                 StandardOutputEncoding = Encoding.GetEncoding(866),
-                Arguments = "/c netdom remove " + name_machine_in_domain + " /Domain:radio1.aqua.sci-nnov.ru /UserD:1 /PasswordD:362 /Force",
+                Arguments = "/c netdom remove " + name_machine_in_domain + " /Domain:radio1.aqua.sci-nnov.ru /UserD:"+ admin_name+ "/ PasswordD:"+ admin_password + " /Force",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
@@ -579,6 +582,39 @@ namespace domain_setings_winforms
             proc.StartInfo.Verb = "runas";
             proc.Start();
             Application.Exit();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            on_of_adapter();
+            //netsh interface set interface "Название адаптера" disable
+            //Process process = Process.Start(new ProcessStartInfo
+            //{
+            //    FileName = "cmd",
+            //    Arguments = "c/ netsh interface set interface Ethernet disable",
+            //    Verb = "runas",
+            //    //UseShellExecute = false,
+            //    //CreateNoWindow = true,
+            //    //RedirectStandardOutput = true,
+            //    //RedirectStandardError = true,
+
+            //    //StandardErrorEncoding = Encoding.GetEncoding(866),
+            //    //StandardOutputEncoding = Encoding.GetEncoding(866),
+            // }); 
+        }
+
+        private void on_of_adapter()
+        {
+            SelectQuery wmiQuery = new SelectQuery("SELECT * FROM Win32_NetworkAdapter WHERE NetConnectionId != NULL");
+            ManagementObjectSearcher searchProcedure = new ManagementObjectSearcher(wmiQuery);
+            foreach (ManagementObject item in searchProcedure.Get())
+            {
+                string test = (string)item["NetConnectionId"];
+                if (((string)item["NetConnectionId"]) == "Ethernet")
+                {
+                    item.InvokeMethod("Disable", null);
+                }
+            }
         }
     }
 }
