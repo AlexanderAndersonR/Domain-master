@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,19 +12,20 @@ namespace Ethernet_adapter
     {
         static void Main(string[] args)
         {
-            Process process = Process.Start(new ProcessStartInfo
+            SelectQuery wmiQuery = new SelectQuery("SELECT * FROM Win32_NetworkAdapter WHERE NetConnectionId != NULL");
+            ManagementObjectSearcher searchProcedure = new ManagementObjectSearcher(wmiQuery);
+            foreach (ManagementObject item in searchProcedure.Get())
             {
-                FileName = "cmd",
-                Arguments = "c/ netsh interface set interface Ethernet disable",
-                Verb = "runas",
-                //UseShellExecute = false,
-                //CreateNoWindow = true,
-                //RedirectStandardOutput = true,
-                //RedirectStandardError = true,
-
-                //StandardErrorEncoding = Encoding.GetEncoding(866),
-                //StandardOutputEncoding = Encoding.GetEncoding(866),
-            });
+                string name = (string)item["NetConnectionId"];
+                if (name == "Ethernet")
+                {
+                    int status = Convert.ToInt16(item["NetConnectionStatus"]);
+                    if (status == 0)
+                        item.InvokeMethod("Enable", null);
+                    else
+                        item.InvokeMethod("Disable", null);
+                }
+            }
         }
     }
 }

@@ -43,7 +43,7 @@
             this.button_proxy = new System.Windows.Forms.Button();
             this.checkBox_auto_run = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_settings_adapter = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // notifyIcon
@@ -175,22 +175,22 @@
             this.checkBox3.UseVisualStyleBackColor = true;
             this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
-            // button1
+            // button_settings_adapter
             // 
-            this.button1.Location = new System.Drawing.Point(213, 171);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button_settings_adapter.Location = new System.Drawing.Point(12, 153);
+            this.button_settings_adapter.Name = "button_settings_adapter";
+            this.button_settings_adapter.Size = new System.Drawing.Size(165, 23);
+            this.button_settings_adapter.TabIndex = 13;
+            this.button_settings_adapter.Text = "Ethernet адаптер подключен";
+            this.button_settings_adapter.UseVisualStyleBackColor = true;
+            this.button_settings_adapter.Click += new System.EventHandler(this.button_settings_adapter_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(532, 206);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.button_settings_adapter);
             this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.checkBox_auto_run);
             this.Controls.Add(this.button_proxy);
@@ -232,7 +232,7 @@
         private System.Windows.Forms.CheckBox checkBox_auto_run;
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.NotifyIcon notifyIcon;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_settings_adapter;
     }
 }
 

@@ -42,12 +42,14 @@ namespace domain_setings_winforms
         public const int INTERNET_OPTION_REFRESH = 37;
         bool settingsReturn, refreshReturn;
         public ToolStripMenuItem MenuItem_notifyIcon_menu = new ToolStripMenuItem ();
+        public ToolStripMenuItem MenuItem_notifyIcon_adapter = new ToolStripMenuItem();
         String way_update_program = @"\\Electronic\1\Domain master";
         BackgroundWorker worker = new BackgroundWorker();
         public Form1()
         {
             InitializeComponent();
             MenuItem_notifyIcon_menu.Click += Menu_Click;
+            MenuItem_notifyIcon_adapter.Click += on_of_adapter;
             notifyIcon_menu();
             checkBox_auto_run.Checked = check_auto_run();
             isAdmin();
@@ -90,12 +92,15 @@ namespace domain_setings_winforms
                 this.ShowInTaskbar = false;
             }
             checkUpdates();
+            check_adapter_connect();
         }
 
         private void notifyIcon_menu()
         {
             notifyIcon.ContextMenuStrip = new ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add(MenuItem_notifyIcon_menu);
+            notifyIcon.ContextMenuStrip.Items.Add(MenuItem_notifyIcon_adapter);
+
         }
         private void Menu_Click(object sender, EventArgs e)
         {
@@ -583,38 +588,53 @@ namespace domain_setings_winforms
             proc.Start();
             Application.Exit();
         }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void on_of_adapter(object sender, EventArgs e)
         {
-            on_of_adapter();
-            //netsh interface set interface "Название адаптера" disable
-            //Process process = Process.Start(new ProcessStartInfo
-            //{
-            //    FileName = "cmd",
-            //    Arguments = "c/ netsh interface set interface Ethernet disable",
-            //    Verb = "runas",
-            //    //UseShellExecute = false,
-            //    //CreateNoWindow = true,
-            //    //RedirectStandardOutput = true,
-            //    //RedirectStandardError = true,
-
-            //    //StandardErrorEncoding = Encoding.GetEncoding(866),
-            //    //StandardOutputEncoding = Encoding.GetEncoding(866),
-            // }); 
+            Process process = Process.Start(new ProcessStartInfo
+            {
+                FileName = "Ethernet_adapter.exe",
+                Verb = "runas",
+             }); 
+        }
+        private delegate void Deleg(string text);
+        private void set_MenuItem_notifyIcon_adapter_text(string text)
+        {
+            MenuItem_notifyIcon_adapter.Text = text;
+            button_settings_adapter.Text = text;
         }
 
-        private void on_of_adapter()
+        private void button_settings_adapter_Click(object sender, EventArgs e)
         {
-            SelectQuery wmiQuery = new SelectQuery("SELECT * FROM Win32_NetworkAdapter WHERE NetConnectionId != NULL");
-            ManagementObjectSearcher searchProcedure = new ManagementObjectSearcher(wmiQuery);
-            foreach (ManagementObject item in searchProcedure.Get())
+            Process process = Process.Start(new ProcessStartInfo
             {
-                string test = (string)item["NetConnectionId"];
-                if (((string)item["NetConnectionId"]) == "Ethernet")
+                FileName = "Ethernet_adapter.exe",
+                Verb = "runas",
+            });
+        }
+
+        private async void check_adapter_connect()
+        {
+            await Task.Run(() =>
+            {
+                while (true)
                 {
-                    item.InvokeMethod("Disable", null);
+                    SelectQuery wmiQuery = new SelectQuery("SELECT * FROM Win32_NetworkAdapter WHERE NetConnectionId != NULL");
+                    ManagementObjectSearcher searchProcedure = new ManagementObjectSearcher(wmiQuery);
+                    foreach (ManagementObject item in searchProcedure.Get())
+                    {
+                        string name = (string)item["NetConnectionId"];
+                        if (name == "Ethernet")
+                        {
+                            int status = Convert.ToInt16(item["NetConnectionStatus"]);
+                            if (status == 0)
+                                BeginInvoke(new Deleg(set_MenuItem_notifyIcon_adapter_text), "Ethernet адаптер отключен");
+                            else
+                                BeginInvoke(new Deleg(set_MenuItem_notifyIcon_adapter_text), "Ethernet адаптер подключен");
+                        }
+                    }
+                    Thread.Sleep(3000);
                 }
-            }
+            });
         }
     }
 }
