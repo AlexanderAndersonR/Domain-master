@@ -5,12 +5,12 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "domain_setings_winforms", "domain_setings_winforms.csproj", "{E1ADDE89-B29B-49FC-8EF0-4C6BA19B6CEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Update", "..\Update\Update.csproj", "{9AF392DA-2BA2-4198-BFF1-33F171511D64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Update", "Update\Update.csproj", "{9AF392DA-2BA2-4198-BFF1-33F171511D64}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E1ADDE89-B29B-49FC-8EF0-4C6BA19B6CEA} = {E1ADDE89-B29B-49FC-8EF0-4C6BA19B6CEA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ethernet_adapter", "..\Ethernet_adapter\Ethernet_adapter.csproj", "{120E1731-7512-4960-A60C-103C701042AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ethernet_adapter", "Ethernet_adapter\Ethernet_adapter.csproj", "{120E1731-7512-4960-A60C-103C701042AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
