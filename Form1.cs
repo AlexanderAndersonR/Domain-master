@@ -495,6 +495,7 @@ namespace domain_setings_winforms
         {
             await Task.Run(() =>
             {
+                bool flag = false;
                 while (true)
                 {
                     try
@@ -523,10 +524,10 @@ namespace domain_setings_winforms
                             }
                             else if (result == DialogResult.No)
                             {
-                                Name += " доступно обновление до версии " + myFileVersionInfo.ProductVersion.ToString();
+                                Text += " доступно обновление до версии " + myFileVersionInfo.ProductVersion.ToString();
                                 break;
                             }
-                            this.Activate();
+                            Activate();
                         }
                         FileVersionInfo myFileVersionInfo_update = FileVersionInfo.GetVersionInfo(way_update_program + "\\Update.exe");
                         newVersion_Update = Convert.ToDouble(myFileVersionInfo_update.ProductVersion.ToString().Replace(".", ""));
@@ -552,23 +553,32 @@ namespace domain_setings_winforms
                             }
                             else if (result == DialogResult.No)
                             {
-                                Name += " доступна новая версия программы обновления";
+                                Text += " доступна новая версия программы обновления " + myFileVersionInfo_update.ProductVersion.ToString();
                                 break;
                             }
                             //this.Activate();
                         }
-                        Thread.Sleep(30000);
+                        Text = "Domain master " + Application.ProductVersion.ToString();
+                        flag = false;
                     }
                     catch (Exception e )
                     {
-                        MessageBox.Show("Нет доступа к серверу обновления \r\n"+e,
-                        "Ошибка!",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error,
-                        MessageBoxDefaultButton.Button1,
-                        MessageBoxOptions.ServiceNotification);
-                        break;
+                        if (!flag)
+                        {
+                            MessageBox.Show("Нет доступа к серверу обновления \r\n"+e,
+                            "Ошибка!",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error,
+                            MessageBoxDefaultButton.Button1,
+                            MessageBoxOptions.ServiceNotification);
+                            flag = true;
+                        }
+                        else
+                        {
+                            Text += " Нет доступа к серверу обновления";
+                        }
                     }
+                    Thread.Sleep(30000);
                 }
             });
             
