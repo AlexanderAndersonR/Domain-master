@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Update", "Update\Update.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ethernet_adapter", "Ethernet_adapter\Ethernet_adapter.csproj", "{120E1731-7512-4960-A60C-103C701042AB}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Domain_settings", "..\Domain_settings\Domain_settings.vdproj", "{C111D808-5BC3-490C-A7DC-3446271AFD16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{120E1731-7512-4960-A60C-103C701042AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{120E1731-7512-4960-A60C-103C701042AB}.Release|x64.ActiveCfg = Release|Any CPU
 		{120E1731-7512-4960-A60C-103C701042AB}.Release|x64.Build.0 = Release|Any CPU
+		{C111D808-5BC3-490C-A7DC-3446271AFD16}.Debug|Any CPU.ActiveCfg = Debug
+		{C111D808-5BC3-490C-A7DC-3446271AFD16}.Debug|x64.ActiveCfg = Debug
+		{C111D808-5BC3-490C-A7DC-3446271AFD16}.Release|Any CPU.ActiveCfg = Release
+		{C111D808-5BC3-490C-A7DC-3446271AFD16}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
