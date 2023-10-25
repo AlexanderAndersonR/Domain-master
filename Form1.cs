@@ -24,8 +24,8 @@ namespace domain_setings_winforms
 
     public partial class Form1 : Form
     {
-        string admin_name = "1";
-        string admin_password = "362";
+        string admin_name = "администратор";
+        string admin_password = "Flvby1djnnfrjq";
         string name_machine_in_domain = "";
         string name_machine = "";
         bool domain_status;
@@ -163,7 +163,7 @@ namespace domain_setings_winforms
                 FileName = "cmd",
                 StandardErrorEncoding = Encoding.GetEncoding(866),
                 StandardOutputEncoding = Encoding.GetEncoding(866),
-                Arguments = "/c NETDOM JOIN " + newName + " /domain:radio1.aqua.sci-nnov.ru /userd:"+ admin_name + " /passwordd:"+ admin_password,
+                Arguments = "/c NETDOM JOIN " + newName + " /domain:radio3.aqua.sci-nnov.ru /userd:"+ admin_name + " /passwordd:"+ admin_password,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
